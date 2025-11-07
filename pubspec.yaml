@@ -26,6 +26,5 @@ flutter:
   # Asset definitions must be nested under the 'flutter:' section and properly indented.
   assets: 
   - assets/loan2.png 
-  - assets/loan.jpg
-  - assets/loan3.png
+  - assets/loan.png
   - assets/logo.png

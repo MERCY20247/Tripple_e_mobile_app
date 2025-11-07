@@ -35,7 +35,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             },
             children: [
               buildPage(
-                image: 'assets/loan.jpg',
+                image: 'assets/loan.png',
                 title: 'Welcome to Tripple E',
                 description:
                     'Access fast and secure loans anytime, anywhere right from your phone.',
