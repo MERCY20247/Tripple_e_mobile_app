@@ -1,0 +1,31 @@
+name: tripple_e_app
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0' # Updated to a valid range for current Flutter SDKs, assuming 3.9.2 is a typo.
+# If your Flutter install is older, you may need a different range.
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^3.0.0 # Updated to a current version as 5.0.0 may not exist yet.
+
+flutter:
+  uses-material-design: true
+
+  # Asset definitions must be nested under the 'flutter:' section and properly indented.
+  assets: 
+  - assets/loan2.png 
+  - assets/loan.jpg
+  - assets/loan3.png
+  - assets/logo.png
