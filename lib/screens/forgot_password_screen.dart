@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 // --- Brand Colors ---
 const Color kGoldColor = Color(0xFFFFD700);
@@ -14,32 +15,33 @@ class ForgotPasswordScreen extends StatelessWidget {
   InputDecoration _buildInputDecoration(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(color: kBlackColor),
+      labelStyle: GoogleFonts.poppins(color: kBlackColor),
       prefixIcon: Icon(icon, color: kBlackColor.withOpacity(0.6)),
       focusedBorder: const OutlineInputBorder(
         borderSide: BorderSide(color: kGoldColor, width: 2.0),
       ),
       enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.grey),
+        borderSide: BorderSide(color: Colors.grey.shade400),
       ),
       border: const OutlineInputBorder(),
     );
   }
 
-  // Submit/reset password logic
   void _resetPassword(BuildContext context) {
     if (_formKey.currentState!.validate()) {
-      FocusScope.of(context).unfocus(); // hide keyboard
+      FocusScope.of(context).unfocus();
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Password reset link sent to ${emailController.text}'),
+          content: Text(
+            'Password reset link sent to ${emailController.text}',
+            style: GoogleFonts.poppins(color: Colors.white),
+          ),
           backgroundColor: kBlackColor,
           duration: const Duration(seconds: 2),
         ),
       );
 
-      // Navigate back after short delay
       Future.delayed(const Duration(seconds: 2), () {
         Navigator.pop(context);
       });
@@ -51,13 +53,18 @@ class ForgotPasswordScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Forgot Password'),
+        title: Text(
+          'Forgot Password',
+          style: GoogleFonts.poppins(
+            color: kGoldColor,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         backgroundColor: kBlackColor,
-        foregroundColor: kGoldColor,
         elevation: 0,
       ),
       body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(), // dismiss keyboard
+        onTap: () => FocusScope.of(context).unfocus(),
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 40.0),
@@ -73,11 +80,17 @@ class ForgotPasswordScreen extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.lock_reset, size: 80, color: kGoldColor),
+                      // --- Top Section with Icon and Text ---
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.lock_reset, size: 80, color: kGoldColor),
+                        ],
+                      ),
                       const SizedBox(height: 20),
-                      const Text(
+                      Text(
                         'Recover Your Account',
-                        style: TextStyle(
+                        style: GoogleFonts.poppins(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: kBlackColor,
@@ -85,33 +98,39 @@ class ForgotPasswordScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        'Enter your email address and we will send you a password reset link.',
+                        'Enter your email address below and we’ll send you a password reset link.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: GoogleFonts.poppins(
                           fontSize: 16,
                           color: Colors.grey[700],
                         ),
                       ),
                       const SizedBox(height: 30),
 
-                      // Email Input Field
-                      TextFormField(
-                        controller: emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration:
-                            _buildInputDecoration('Email Address', Icons.email),
-                        validator: (value) {
-                          if (value == null ||
-                              value.isEmpty ||
-                              !value.contains('@')) {
-                            return 'Please enter a valid email address';
-                          }
-                          return null;
-                        },
+                      // --- Email Row (uses Row + Expanded) ---
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              decoration: _buildInputDecoration(
+                                  'Email Address', Icons.email),
+                              validator: (value) {
+                                if (value == null ||
+                                    value.isEmpty ||
+                                    !value.contains('@')) {
+                                  return 'Please enter a valid email address';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 30),
 
-                      // Reset Password Button
+                      // --- Reset Button (ElevatedButton) ---
                       ElevatedButton(
                         onPressed: () => _resetPassword(context),
                         style: ElevatedButton.styleFrom(
@@ -122,28 +141,34 @@ class ForgotPasswordScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           'SEND RESET LINK',
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
                       const SizedBox(height: 20),
 
-                      // Back to Login Link
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text(
-                          "Remembered your password? Log In",
-                          style: TextStyle(
-                            color: kBlackColor,
-                            fontSize: 16,
+                      // --- Back to Login (TextButton) ---
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              "Remembered your password? Log In",
+                              style: GoogleFonts.poppins(
+                                color: kBlackColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ],
                   ),

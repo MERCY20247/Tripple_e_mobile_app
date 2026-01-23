@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'loan_application_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'loan_types_screen.dart';
+import 'loan_history_screen.dart';
+import 'profile_screen.dart';
 
 // --- Brand Colors ---
 const Color kGoldColor = Color(0xFFFFD700);
@@ -13,91 +16,130 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundColor,
+
+      // ---------------- AppBar ----------------
       appBar: AppBar(
         backgroundColor: kBlackColor,
+        centerTitle: true,
         title: Image.asset(
           'assets/logo.png',
           height: 40,
         ),
-        centerTitle: true,
         actions: [
+          // Notifications
           IconButton(
-            icon: Icon(Icons.notifications, color: kGoldColor),
+            icon: const Icon(Icons.notifications, color: kGoldColor),
             onPressed: () {
-              // Handle notification tap
+              // TODO: Navigate to NotificationsScreen
+            },
+          ),
+
+          // Profile
+          IconButton(
+            icon: const Icon(Icons.person, color: kGoldColor),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ProfileScreen(),
+                ),
+              );
             },
           ),
         ],
       ),
-      body: Center(
+
+      // ---------------- Body ----------------
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Card(
-          margin: const EdgeInsets.all(20),
           elevation: 8,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
           child: Padding(
-            padding: const EdgeInsets.all(30.0),
+            padding: const EdgeInsets.all(30),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'Welcome, Customer!',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: kBlackColor,
-                  ),
+                // ---------------- Welcome ----------------
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.account_circle,
+                      color: kGoldColor,
+                      size: 42,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Welcome, Customer!',
+                      style: GoogleFonts.poppins(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: kBlackColor,
+                      ),
+                    ),
+                  ],
                 ),
+
                 const SizedBox(height: 10),
+
                 Text(
                   'Your trusted partner in financial services.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: 16,
                     color: Colors.grey[700],
                   ),
                 ),
+
                 const SizedBox(height: 30),
 
-                // ElevatedButton for Loan Application
+                // ---------------- Apply for Loan ----------------
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => LoanApplicationScreen(),
+                        builder: (_) => const LoanTypesScreen(),
                       ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: kGoldColor,
                     foregroundColor: kBlackColor,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 40, vertical: 15),
+                    minimumSize: const Size(double.infinity, 55),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'APPLY FOR A LOAN',
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
 
                 const SizedBox(height: 15),
 
-                // Optional TextButton for other action
+                // ---------------- Loan History ----------------
                 TextButton(
                   onPressed: () {
-                    // For example, navigate to Loan History or Support
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const LoanHistoryScreen(),
+                      ),
+                    );
                   },
-                  child: const Text(
+                  child: Text(
                     'View Loan History',
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 16,
+                      fontWeight: FontWeight.w500,
                       color: kBlackColor,
                     ),
                   ),

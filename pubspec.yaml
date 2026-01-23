@@ -5,26 +5,35 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0' # Updated to a valid range for current Flutter SDKs, assuming 3.9.2 is a typo.
-# If your Flutter install is older, you may need a different range.
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
 
   cupertino_icons: ^1.0.8
+  google_fonts: ^7.0.2   # <-- Added Google Fonts package
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^3.0.0 # Updated to a current version as 5.0.0 may not exist yet.
+  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true
 
-  # Asset definitions must be nested under the 'flutter:' section and properly indented.
-  assets: 
-  - assets/loan2.png 
-  - assets/loan.png
-  - assets/logo.png
+  # --- App Assets ---
+  assets:
+    - assets/logo.png
+    - assets/loan.png
+    - assets/loan2.png
+
+  # --- Custom Fonts (offline Poppins) ---
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins-Medium.ttf
+        - asset: assets/fonts/Poppins-Bold.ttf
+          weight: 700

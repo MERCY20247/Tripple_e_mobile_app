@@ -1,34 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'guarantor_screen.dart'; // Import your new screen
 
 // --- Brand Colors ---
 const Color kGoldColor = Color(0xFFFFD700);
 const Color kBlackColor = Colors.black;
 const Color kBackgroundColor = Color(0xFFFAFAFA);
 
-class LoanApplicationScreen extends StatelessWidget {
-  LoanApplicationScreen({super.key});
+class LoanApplicationScreen extends StatefulWidget {
+  const LoanApplicationScreen({super.key});
 
-  // Form key for validation
+  @override
+  State<LoanApplicationScreen> createState() => _LoanApplicationScreenState();
+}
+
+class _LoanApplicationScreenState extends State<LoanApplicationScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers for input fields
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _termController = TextEditingController();
   final TextEditingController _purposeController = TextEditingController();
 
-  // Submit logic
-  void _submitApplication(BuildContext context) {
+  @override
+  void dispose() {
+    _amountController.dispose();
+    _termController.dispose();
+    _purposeController.dispose();
+    super.dispose();
+  }
+
+  void _proceedToGuarantor() {
     if (_formKey.currentState!.validate()) {
-      // Show confirmation
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              'Loan application for \$${_amountController.text} submitted!'),
-          backgroundColor: kBlackColor,
-          duration: const Duration(seconds: 3),
+      // Navigate to the next step in the application process
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const GuarantorScreen(),
         ),
       );
-      Navigator.pop(context); // Go back to previous screen
     }
   }
 
@@ -37,102 +46,113 @@ class LoanApplicationScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
-        title: const Text('New Loan Application'),
-        backgroundColor: kBlackColor,
-        foregroundColor: kGoldColor,
         elevation: 0,
+        title: Text(
+          'Loan Details',
+          style: GoogleFonts.poppins(
+            color: kGoldColor,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        backgroundColor: kBlackColor,
+        iconTheme: const IconThemeData(color: kGoldColor),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(25),
         child: Form(
-          key: _formKey, // Requirement: Form widget
+          key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Tell us about your loan needs:',
-                style: TextStyle(
-                  fontSize: 20,
+              Text(
+                "Step 1 of 3: Loan Information",
+                style: GoogleFonts.poppins(
                   fontWeight: FontWeight.bold,
-                  color: kBlackColor,
+                  color: kBlackColor.withOpacity(0.5),
                 ),
               ),
-              const SizedBox(height: 30),
-
-              // Loan Amount Field
-              _buildTextFormField(
+              const SizedBox(height: 20),
+              
+              _buildInputField(
                 controller: _amountController,
-                label: 'Desired Loan Amount (\$) *',
-                icon: Icons.attach_money,
+                label: 'Loan Amount',
+                hint: 'e.g. 500,000',
+                icon: Icons.account_balance_wallet,
+                prefixText: 'UGX ',
                 keyboardType: TextInputType.number,
                 validator: (value) {
-                  if (value == null ||
-                      value.isEmpty ||
-                      double.tryParse(value) == null ||
-                      double.parse(value) <= 100) {
-                    return 'Please enter a valid amount (min \$100)';
-                  }
+                  if (value == null || value.isEmpty) return 'Please enter amount';
+                  final n = double.tryParse(value);
+                  if (n == null || n < 100) return 'Minimum amount is 100';
                   return null;
                 },
               ),
+
               const SizedBox(height: 20),
 
-              // Loan Term Field
-              _buildTextFormField(
+              _buildInputField(
                 controller: _termController,
-                label: 'Repayment Term (Months) *',
-                icon: Icons.calendar_today,
+                label: 'Repayment Period',
+                hint: 'e.g. 12',
+                icon: Icons.timelapse,
+                suffixText: ' Months',
                 keyboardType: TextInputType.number,
                 validator: (value) {
-                  if (value == null ||
-                      value.isEmpty ||
-                      int.tryParse(value) == null ||
-                      int.parse(value) < 6) {
-                    return 'Term must be at least 6 months';
-                  }
+                  if (value == null || value.isEmpty) return 'Please enter period';
+                  final n = int.tryParse(value);
+                  if (n == null || n < 6) return 'Minimum 6 months';
                   return null;
                 },
               ),
+
               const SizedBox(height: 20),
 
-              // Loan Purpose Field
-              _buildTextFormField(
+              _buildInputField(
                 controller: _purposeController,
-                label: 'Purpose of Loan *',
-                icon: Icons.description,
-                maxLines: 3,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please state the loan purpose';
-                  }
-                  return null;
-                },
+                label: 'Purpose of Loan',
+                hint: 'Describe why you need this loan...',
+                icon: Icons.edit_note,
+                maxLines: 4,
+                validator: (value) =>
+                    value == null || value.length < 10 ? 'Please provide more detail' : null,
               ),
+
               const SizedBox(height: 40),
 
-              // Submit Button
               ElevatedButton(
-                onPressed: () => _submitApplication(context),
+                onPressed: _proceedToGuarantor,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: kGoldColor,
-                  foregroundColor: kBlackColor,
+                  backgroundColor: kBlackColor,
+                  foregroundColor: kGoldColor,
                   minimumSize: const Size(double.infinity, 60),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 5,
                 ),
-                child: const Text(
-                  'SUBMIT APPLICATION',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'NEXT: GUARANTOR INFO',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    const Icon(Icons.arrow_forward, size: 20),
+                  ],
                 ),
               ),
-              const SizedBox(height: 15),
-
-              // Cancel / Back Button
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text(
-                  'CANCEL',
-                  style: TextStyle(fontSize: 16, color: kBlackColor),
+              
+              Center(
+                child: TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'Cancel Application',
+                    style: GoogleFonts.poppins(color: Colors.redAccent),
+                  ),
                 ),
               ),
             ],
@@ -142,32 +162,62 @@ class LoanApplicationScreen extends StatelessWidget {
     );
   }
 
-  // Helper for TextFormField decoration
-  Widget _buildTextFormField({
+  Widget _buildInputField({
     required TextEditingController controller,
     required String label,
+    required String hint,
     required IconData icon,
+    String? prefixText,
+    String? suffixText,
     TextInputType keyboardType = TextInputType.text,
     String? Function(String?)? validator,
     int maxLines = 1,
   }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      maxLines: maxLines,
-      validator: validator,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(color: kBlackColor),
-        prefixIcon: Icon(icon, color: kBlackColor.withOpacity(0.6)),
-        focusedBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: kGoldColor, width: 2),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: kBlackColor,
+          ),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey.shade400),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          keyboardType: keyboardType,
+          maxLines: maxLines,
+          validator: validator,
+          style: GoogleFonts.poppins(color: kBlackColor),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: GoogleFonts.poppins(color: Colors.grey, fontSize: 14),
+            prefixText: prefixText,
+            suffixText: suffixText,
+            prefixIcon: Icon(icon, color: kGoldColor),
+            filled: true,
+            fillColor: Colors.white,
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: kGoldColor, width: 2),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.redAccent),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.redAccent, width: 2),
+            ),
+          ),
         ),
-        border: const OutlineInputBorder(),
-      ),
+      ],
     );
   }
 }

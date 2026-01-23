@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
@@ -11,19 +12,38 @@ class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
 
   @override
-  _AuthScreenState createState() => _AuthScreenState();
+  State<AuthScreen> createState() => _AuthScreenState();
 }
 
 class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailOrPhoneController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  bool _obscurePassword = true; // toggle password visibility
 
-  InputDecoration _inputDecoration({required String label, required IconData prefixIcon, Widget? suffixIcon}) {
+  final TextEditingController _emailOrPhoneController =
+      TextEditingController();
+  final TextEditingController _passwordController =
+      TextEditingController();
+
+  bool _obscurePassword = true;
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailOrPhoneController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  InputDecoration _inputDecoration({
+    required String label,
+    required IconData prefixIcon,
+    Widget? suffixIcon,
+  }) {
     return InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(color: kBlackColor),
+      labelStyle: GoogleFonts.poppins(
+        color: kBlackColor,
+        fontSize: 15,
+      ),
       prefixIcon: Icon(prefixIcon, color: kBlackColor.withOpacity(0.6)),
       suffixIcon: suffixIcon,
       enabledBorder: OutlineInputBorder(
@@ -36,46 +56,83 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
+  Future<void> _login() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      // 🔗 TODO: Replace this with API call to Laravel
+      await Future.delayed(const Duration(seconds: 2));
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login Successful'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Login failed: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Sign In'),
+        title: Text(
+          'Sign In',
+          style: GoogleFonts.poppins(
+            color: kGoldColor,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         backgroundColor: kBlackColor,
         foregroundColor: kGoldColor,
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(30.0),
+        padding: const EdgeInsets.all(30),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
-              // Logo
               Image.asset(
                 'assets/logo.png',
                 height: 120,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Icon(Icons.account_circle, size: 100, color: Colors.grey);
-                },
               ),
               const SizedBox(height: 40),
 
-              // Email or Phone
+              // Email / Phone
               TextFormField(
                 controller: _emailOrPhoneController,
-                decoration: _inputDecoration(label: 'Phone Number or Email', prefixIcon: Icons.person),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your phone number or email';
-                  }
-                  return null;
-                },
+                decoration: _inputDecoration(
+                  label: 'Phone Number or Email',
+                  prefixIcon: Icons.person,
+                ),
+                validator: (value) =>
+                    value == null || value.isEmpty
+                        ? 'Enter email or phone'
+                        : null,
               ),
               const SizedBox(height: 20),
 
-              // Password with eye icon
+              // Password
               TextFormField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
@@ -84,94 +141,91 @@ class _AuthScreenState extends State<AuthScreen> {
                   prefixIcon: Icons.lock,
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                      color: kBlackColor.withOpacity(0.6),
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
                   ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  } else if (value.length < 6) {
-                    return 'Password must be at least 6 characters';
+                    return 'Enter password';
+                  }
+                  if (value.length < 6) {
+                    return 'Password too short';
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: 15),
 
-              // Forgot Password
+              const SizedBox(height: 10),
+
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>  ForgotPasswordScreen()),
-                    );
-                  },
-                  child: const Text(
-                    'Forgot Password?',
-                    style: TextStyle(color: kBlackColor),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Login Button
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Login Successful!'),
-                        backgroundColor: Colors.green,
+                      MaterialPageRoute(
+                        builder: (_) => ForgotPasswordScreen(),
                       ),
                     );
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const HomeScreen()),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: kGoldColor,
-                  foregroundColor: kBlackColor,
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                  },
+                  child: Text(
+                    'Forgot Password?',
+                    style: GoogleFonts.poppins(color: kBlackColor),
                   ),
                 ),
-                child: const Text(
-                  'LOG IN',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
               ),
+
+              const SizedBox(height: 20),
+
+              // LOGIN BUTTON
+              _isLoading
+                  ? const CircularProgressIndicator(color: kGoldColor)
+                  : ElevatedButton(
+                      onPressed: _login,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: kGoldColor,
+                        foregroundColor: kBlackColor,
+                        minimumSize:
+                            const Size(double.infinity, 55),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        'LOG IN',
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+
               const SizedBox(height: 30),
 
-              // Register Link
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     "Don't have an account? ",
-                    style: TextStyle(color: kBlackColor),
+                    style: GoogleFonts.poppins(),
                   ),
                   TextButton(
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => RegisterScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const RegisterScreen(),
+                        ),
                       );
                     },
-                    child: const Text(
+                    child: Text(
                       'Sign Up',
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         color: kGoldColor,
                         fontWeight: FontWeight.bold,
                       ),
